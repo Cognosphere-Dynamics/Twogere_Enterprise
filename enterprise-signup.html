@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Twogere | Enterprise Signup</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./gitcash_logo2.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Include the intl-tel-input CSS and JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/intlTelInput.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/utils.js"></script>
+    <style>
+        /* Add slide-in animation */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        /* Fixed height for the form container */
+        .form-container {
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Scrollable form content */
+        .form-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            /* Allow scrolling if content exceeds height */
+            padding-bottom: 80px;
+            /* Space for fixed buttons */
+        }
+
+        /* Fixed buttons at the bottom */
+        .form-buttons {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 16px;
+            /* border-top: 1px solid #e5e7eb; */
+        }
+
+        .phone-input-container .iti {
+            width: 100%;
+        }
+
+        .phone-input-container .iti__flag-container {
+            display: flex;
+        }
+
+        .phone-input-container .iti__selected-flag {
+            padding: 0 12px 0 8px;
+        }
+
+        /* Style for when phone number is valid */
+        .phone-valid {
+            border-color: #10b981 !important;
+        }
+
+        /* Style for when phone number is invalid */
+        .phone-invalid {
+            border-color: #ef4444 !important;
+        }
+
+         /* Mobile device error message */
+         .mobile-error {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 9999;
+            padding: 2rem;
+            text-align: center;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Desktop content container */
+        .desktop-content {
+            display: block;
+        }
+        
+        /* Media query for mobile devices */
+        @media (max-width: 768px) {
+            .mobile-error {
+                display: flex;
+            }
+            
+            .desktop-content {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+     <!-- Mobile Error Message -->
+     <div class="mobile-error">
+        <svg class="w-24 h-24 text-red-500 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <h1 class="text-2xl font-bold text-gray-900 mb-4">Desktop Access Only</h1>
+        <p class="text-lg text-gray-600 mb-6">This page is only available on laptop and desktop devices.</p>
+        <p class="text-md text-gray-500">Please access this page using a larger screen for the best experience.</p>
+        <a href="get_started.html" class="mt-8 px-6 py-3 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition-colors">
+            Return to Home
+        </a>
+    </div>
+
+    <!-- Desktop Content -->
+    <div class="desktop-content">
+    <!-- Navbar -->
+    <nav class="py-4 bg-white top-0 sticky z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <form action="{{ route('welcome') }}" method="GET">
+                <button type="submit" class="text-gray-600 hover:text-gray-900 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Return to Home
+                </button>
+            </form>
+
+            <div class="flex items-center">
+                <img src="{{asset('images/gitcash_logo2.png')}}" alt="Logo" class="w-10 h-10 mr-2">
+                <span class="text-2xl font-bold text-gray-900">GitCash</span>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Main Content -->
+    <div class="flex-grow flex items-center justify-center py-4">
+        <div class="container max-w-3xl mx-auto px-4">
+            <div class="bg-white p-8 relative form-container">
+                <!-- Header -->
+                <div class="mb-8">
+                    <div class="inline-block bg-black rounded-lg p-3 mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Enterprise / SME Account</h2>
+                    <p class="text-gray-600">Complete all steps</p>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mb-8 top-5 sticky z-50 transition-shadow duration-300">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm font-medium text-green-600">Step <span id="currentStep">1</span> of <span
+                                id="totalSteps">3</span>
+                            <span class="text-sm font-medium text-gray-600" id="stepTitle">Admin Information</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-amber-600 h-2.5 rounded-full transition-all duration-300" id="progressBar"
+                            style="width: 16.66%"></div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form id="signupForm" action="#" method="post"
+                    enctype="multipart/form-data">
+                    <!-- Scrollable Form Content -->
+                    <div class="form-content scrollable h-[300px]">
+                        <!-- Step 1: Company Information -->
+                        <div class="step-content" id="step1">
+                            <p id="validationErrorContainer" class="text-red-600 text-sm"></p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <!-- Business name -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+                                    <input type="text" required name="business_name" id="business_name"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all">
+                                </div>
+
+                                <!-- website -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                                    <input type="text" name="website" id="website"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                        required>
+                                </div>
+
+
+                                <!-- Password -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                    <input type="password" name="password" id="password"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                        required>
+                                </div>
+
+                                <!-- Confirm Password -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                                    <input type="password" name="password_confirmation" id="confirm-password"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                        required>
+                                </div>
+
+                                <!-- Email -->
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email
+                                        Address</label>
+                                    <input type="email" name="email" id="email"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all"
+                                        required pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                                        title="Please enter a valid email address.">
+                                </div>
+
+                                <!-- Phone Number with Country Selection -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                    <div class="phone-input-container">
+                                        <input type="tel" name="phone" id="phone"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all">
+                                        <input type="hidden" name="phone_country" id="phone_country">
+                                        <input type="hidden" name="phone_full" id="phone_full">
+                                        <div id="phone-validation-message" class="mt-1 text-sm text-red-600 hidden">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--Nature of business--->
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Nature of
+                                        Business</label>
+                                    <input type="email" name="nature_of_business" id="nature_of_business" required
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Company Logo -->
+                        <div class="step-content hidden" id="step2">
+                            <p id="validationErrorContainer" class="text-red-600 text-sm"></p>
+                            <div class="grid gap-4 w-full">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Company Logo</label>
+                                <div class="flex items-center justify-center w-full">
+                                    <label for="profile-image-upload"
+                                        class="w-full flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                        <div class="flex flex-col items-center justify-center pt-5 pb-6"
+                                            id="profile-image-preview">
+                                            <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 20 16">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                                            </svg>
+                                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
+                                                    class="font-semibold">Click to upload</span> or drag and drop</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF
+                                                (MAX. 800x400px)</p>
+                                        </div>
+                                        <input id="profile-image-upload" name="profile_image" type="file" class="hidden"
+                                            required
+                                            onchange="previewFile('profile-image-upload', 'profile-image-preview')" />
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Address Information -->
+                        <div class="step-content hidden" id="step3">
+                            <p id="validationErrorContainer" class="text-red-600 text-sm"></p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                    <input type="text" name="address" required id="address"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                    <input type="text" name="city" required id="city"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">State</label>
+                                    <input type="text" name="state" required id="state"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Zip Code</label>
+                                    <input type="text" name="zip_code" required id="zip_code"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                                    <input type="text" name="country" required id="country"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none transition-all">
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Step 4: Terms -->
+                        <div class="step-content hidden" id="step4">
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h3 class="font-medium text-gray-900 mb-2">Terms and Conditions</h3>
+                                    <p class="text-sm text-gray-600 mb-4">Please read and accept our terms and
+                                        conditions to continue.</p>
+                                </div>
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="terms" id="termsCheckbox"
+                                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                    <span class="ml-2 text-sm text-gray-600">I agree to the Terms and Conditions</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="privacy" id="privacyCheckbox"
+                                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                    <span class="ml-2 text-sm text-gray-600">I agree to the Privacy Policy</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Step 6: OTP Verification (Hidden by Default) -->
+                        <div class="step-content hidden" id="step6">
+                            <div class="space-y-5">
+                                <div class="bg-gray-50 p-3 rounded-lg shadow-sm">
+                                    <p class="text-sm text-gray-600">We've sent a 6-digit code to your phone. Please
+                                        enter it below to verify your account.</p>
+                                </div>
+
+                                <div class="flex flex-col items-center">
+                                    <label class="block text-sm font-medium text-gray-700 mb-3 w-full text-center">Enter
+                                        verification code</label>
+
+                                    <div class="flex justify-center gap-2 mb-6">
+                                        <input type="text" maxlength="1"
+                                            class="w-12 h-14 text-center text-xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 otp-input"
+                                            data-index="0">
+                                        <input type="text" maxlength="1"
+                                            class="w-12 h-14 text-center text-xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 otp-input"
+                                            data-index="1">
+                                        <input type="text" maxlength="1"
+                                            class="w-12 h-14 text-center text-xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 otp-input"
+                                            data-index="2">
+                                        <input type="text" maxlength="1"
+                                            class="w-12 h-14 text-center text-xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 otp-input"
+                                            data-index="3">
+                                        <input type="text" maxlength="1"
+                                            class="w-12 h-14 text-center text-xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 otp-input"
+                                            data-index="4">
+                                        <input type="text" maxlength="1"
+                                            class="w-12 h-14 text-center text-xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 otp-input"
+                                            data-index="5">
+                                    </div>
+
+                                    <!-- Hidden field to store the complete OTP value -->
+                                    <input type="hidden" name="phone_otp" id="phoneOtpComplete">
+
+                                    <div class="text-center text-sm text-gray-600">
+                                        <p>Didn't receive the code? <button type="button" id="resendOtpBtn"
+                                                class="text-blue-600 hover:text-blue-800 font-medium">Resend
+                                                Code</button></p>
+                                        <p class="mt-1"><span id="otpCountdown" class="font-medium">60</span> seconds
+                                            remaining</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fixed Navigation Buttons -->
+                    <div class="form-buttons">
+                        <div class="flex justify-between">
+                            <button type="button" id="prevBtn"
+                                class="px-6 py-2 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                                Previous
+                            </button>
+                            <button id="nextBtn" type="button"
+                                class="px-6 text-white bg-green-700 hover:bg-amber-600 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2">
+                                Next
+                                <svg class="ml-2 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none" viewBox="0 0 14 10">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
+                                </svg>
+                            </button>
+                            <button type="submit" id="submitBtn"
+                                class="px-6 py-2 bg-green-700 text-white rounded-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors hidden">
+                                Create Account
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-4 text-center text-gray-600 fixed bottom-0 left-0 w-full shadow-md">
+        <div class="container mx-auto px-4">
+            &copy; 2025 Cognosphere Dynamics. All rights reserved.
+        </div>
+    </footer>
+    </div>
+
+    <script>
+
+        // Check screen size on page load and resize
+        function checkScreenSize() {
+            const mobileError = document.querySelector('.mobile-error');
+            const desktopContent = document.querySelector('.desktop-content');
+            
+            if (window.innerWidth <= 1024) {
+                mobileError.style.display = 'flex';
+                desktopContent.style.display = 'none';
+            } else {
+                mobileError.style.display = 'none';
+                desktopContent.style.display = 'block';
+            }
+        }
+        
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', checkScreenSize);
+        
+        // Run when window is resized
+        window.addEventListener('resize', checkScreenSize);
+        
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize the intl-tel-input plugin
+            const phoneInput = document.getElementById('phone');
+            const phoneCountryInput = document.getElementById('phone_country');
+            const phoneFullInput = document.getElementById('phone_full');
+            const validationMessage = document.getElementById('phone-validation-message');
+
+            // Initialize the phone input plugin
+            const iti = window.intlTelInput(phoneInput, {
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/utils.js",
+                initialCountry: "auto", // Auto-detect country based on IP
+                geoIpLookup: function (callback) {
+                    // Use ipinfo.io to detect user's country
+                    fetch('https://ipinfo.io/json?token=YOUR_IPINFO_TOKEN')
+                        .then(response => response.json())
+                        .then(data => callback(data.country))
+                        .catch(() => callback("UG")); // Default to US if detection fails
+                },
+                separateDialCode: true,
+                allowDropdown: true,
+                autoPlaceholder: "aggressive",
+                formatOnDisplay: true,
+                preferredCountries: ["ug", "ke", "tz", "rw", "bi", "ss", "et", "so", "dj"] // Add your preferred countries
+            });
+
+            // Update hidden inputs with the full international phone number and country code
+            function updatePhoneInputs() {
+
+                // Only validate if there's actually input
+                if (!phoneInput.value.trim()) {
+                    validationMessage.classList.add('hidden');
+                    return true;
+                }
+
+                if (iti.isValidNumber()) {
+                    phoneInput.classList.add('phone-valid');
+                    phoneInput.classList.remove('phone-invalid');
+                    validationMessage.classList.add('hidden');
+
+                    // Get the selected country data
+                    const countryData = iti.getSelectedCountryData();
+                    // Store the country code
+                    phoneCountryInput.value = countryData.iso2.toUpperCase();
+                    // Store the full phone number in E.164 format (with + sign)
+                    phoneFullInput.value = iti.getNumber();
+
+                    return true;
+                } else {
+                    phoneInput.classList.remove('phone-valid');
+                    phoneInput.classList.add('phone-invalid');
+
+                    // Get the validation error type
+                    const errorCode = iti.getValidationError();
+                    let errorMsg = "Invalid phone number";
+
+                    // Customize error messages based on the error type
+                    switch (errorCode) {
+                        case intlTelInputUtils.validationError.INVALID_COUNTRY_CODE:
+                            errorMsg = "Invalid country code";
+                            break;
+                        case intlTelInputUtils.validationError.TOO_SHORT:
+                            errorMsg = "Phone number is too short";
+                            break;
+                        case intlTelInputUtils.validationError.TOO_LONG:
+                            errorMsg = "Phone number is too long";
+                            break;
+                        case intlTelInputUtils.validationError.NOT_A_NUMBER:
+                            errorMsg = "Please enter a valid number";
+                            break;
+                    }
+
+                    validationMessage.textContent = errorMsg;
+                    validationMessage.classList.remove('hidden');
+
+                    return false;
+                }
+            }
+
+            // Set up event listeners for validation
+            phoneInput.addEventListener('blur', updatePhoneInputs);
+            phoneInput.addEventListener('change', updatePhoneInputs);
+            phoneInput.addEventListener('keyup', updatePhoneInputs);
+
+            // Listen for country changes
+            phoneInput.addEventListener('countrychange', function () {
+                // Update the placeholder to match the selected country's format
+                phoneInput.placeholder = intlTelInputUtils.getExampleNumber(
+                    iti.getSelectedCountryData().iso2,
+                    true,
+                    intlTelInputUtils.numberFormat.INTERNATIONAL
+                );
+
+                // Update the validation
+                updatePhoneInputs();
+            });
+
+            // Add validation for the form
+            const form = document.getElementById('signupForm');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    if (!updatePhoneInputs()) {
+                        e.preventDefault();
+                        alert('Please enter a valid phone number before submitting the form.');
+                    }
+                });
+            }
+
+            // Check for existing value on page load (useful when form reloads with validation errors)
+            setTimeout(function () {
+                if (phoneInput.value) {
+                    updatePhoneInputs();
+                }
+            }, 500);
+
+            // Multi-step form logic
+            const progressBar = document.getElementById('progressBar');
+            const currentStepSpan = document.getElementById('currentStep');
+            const totalStepsSpan = document.getElementById('totalSteps');
+            const stepTitleSpan = document.getElementById('stepTitle');
+            const prevButton = document.getElementById('prevBtn');
+            const nextButton = document.getElementById('nextBtn');
+            const submitButton = document.getElementById('submitBtn');
+            const termsCheckbox = document.getElementById('termsCheckbox');
+            const privacyCheckbox = document.getElementById('privacyCheckbox');
+            const step6 = document.getElementById('step6');
+
+            let currentStep = 1;
+            let totalSteps = 5; // Default total steps (Step 6 is hidden initially)
+
+            const stepTitles = {
+                1: 'Personal Information',
+                2: 'Profile Avatar',
+                3: 'Address Information',
+                4: 'Identification',
+                5: 'Professional Information',
+                6: 'Legal Agreement',
+                7: 'OTP Verification' // Added step title
+            };
+
+            function updateButtons() {
+                if (currentStep === 1) {
+                    prevButton.classList.add('opacity-50', 'cursor-not-allowed');
+                    prevButton.disabled = true;
+                } else {
+                    prevButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    prevButton.disabled = false;
+                }
+
+                if (currentStep === 7) {
+                    nextButton.classList.add('hidden');
+                    submitButton.classList.remove('hidden');
+                } else if (currentStep === 6) {
+                    checkCheckboxes();
+                } else {
+                    nextButton.classList.remove('hidden');
+                    submitButton.classList.add('hidden');
+                }
+            }
+
+            function updateProgress() {
+                const progress = (currentStep / totalSteps) * 100;
+                progressBar.style.width = `${progress}%`;
+                currentStepSpan.textContent = currentStep;
+                totalStepsSpan.textContent = totalSteps; // Update total steps display
+                stepTitleSpan.textContent = stepTitles[currentStep];
+            }
+
+            function showCurrentStep() {
+                document.querySelectorAll('.step-content').forEach((step, index) => {
+                    if (index + 1 === currentStep) {
+                        step.classList.remove('hidden');
+                        step.classList.add('slide-in');
+                        // Remove animation class after animation completes
+                        setTimeout(() => {
+                            step.classList.remove('slide-in');
+                        }, 500);
+                    } else {
+                        step.classList.add('hidden');
+                    }
+                });
+            }
+
+            function validateCurrentStep() {
+                const currentStepElement = document.getElementById(`step${currentStep}`);
+                const requiredFields = currentStepElement.querySelectorAll('[required]');
+                const errorContainer = currentStepElement.querySelector('#validationErrorContainer');
+
+                let isValid = true;
+                let errorMessages = [];
+
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.classList.add('border-red-500');
+
+                        // Get field label or placeholder for more specific error message
+                        const fieldLabel = field.previousElementSibling?.textContent || field.placeholder || 'This field';
+                        errorMessages.push(`${fieldLabel} is required`);
+
+                        field.addEventListener('input', () => {
+                            field.classList.remove('border-red-500');
+                            if (errorContainer) {
+                                errorContainer.textContent = '';
+                                errorContainer.classList.add('hidden');
+                            }
+                        }, { once: true });
+                    }
+                });
+
+                if (!isValid && errorContainer) {
+                    errorContainer.textContent = errorMessages.join(', ');
+                    errorContainer.classList.remove('hidden');
+                    errorContainer.classList.add('text-red-600', 'text-sm', 'mt-2', 'mb-2');
+                }
+
+                return isValid;
+            }
+
+
+
+
+            function nextStep() {
+                // Validate the current step before proceeding
+                if (!validateCurrentStep()) {
+                    return; // Stop if validation fails
+                }
+
+                // If the user is on Step 6 and has not agreed to terms, stop and show an alert
+                if (currentStep === 6 && (!termsCheckbox.checked || !privacyCheckbox.checked)) {
+                    alert('Please agree to the terms and conditions to proceed.');
+                    return;
+                }
+
+                // If the user is on Step 5 and agrees to terms, show Step 6
+                if (currentStep === 5 && termsCheckbox.checked && privacyCheckbox.checked) {
+                    totalSteps = 6;
+                    currentStep = 6;
+                    step6.classList.remove('hidden');
+                    updateProgress(); // Update progress after changing steps
+                    showCurrentStep();
+                    updateButtons(); // Update button states
+
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                    if (!csrfToken) {
+                        alert('CSRF token is missing or invalid.');
+                        return;
+                    }
+
+                    const phone = form.phone_full.value;
+
+                    if (!phone) {
+                        alert('Please provide a valid phone number.');
+                        return;
+                    }
+
+                    fetch('/sendOTPs', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            phone: phone
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            startCountdown(60); // Start the countdown timer
+                            alert('Verification code sent successfully. Please check your phone.');
+                        } else {
+                            alert('Failed to send verification code. Please try again later.');
+                        }
+                    }).catch(error => {
+                        console.error('Error sending OTP:', error);
+                        alert('An unexpected error occurred. Please try again later.');
+                    });
+
+                    return; // Prevent further execution of next step
+                }
+
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateProgress();
+                    showCurrentStep();
+                    updateButtons();
+                }
+            }
+
+            function prevStep() {
+                if (currentStep > 1) {
+                    currentStep--;
+                    updateProgress();
+                    showCurrentStep();
+                    updateButtons();
+                }
+            }
+
+            nextButton.addEventListener('click', nextStep);
+            prevButton.addEventListener('click', prevStep);
+
+            // Listen for changes on the checkboxes
+            termsCheckbox.addEventListener('change', checkCheckboxes);
+            privacyCheckbox.addEventListener('change', checkCheckboxes);
+
+            function checkCheckboxes() {
+                if (termsCheckbox.checked && privacyCheckbox.checked) {
+                    nextButton.classList.remove('hidden'); // Show next button when both are checked
+                    submitButton.classList.add('hidden'); // Hide submit button if either is checked
+                } else {
+                    nextButton.classList.add('hidden'); // Hide next button if either is unchecked
+                    submitButton.classList.add('hidden');
+                }
+            }
+
+            // Initialize visibility based on the current checkbox status
+            checkCheckboxes();
+
+
+
+            // OTP input handling
+            const otpInputs = document.querySelectorAll('.otp-input');
+            const phoneOtpComplete = document.getElementById('phoneOtpComplete');
+            const resendOtpBtn = document.getElementById('resendOtpBtn');
+            const otpCountdownEl = document.getElementById('otpCountdown');
+            let countdownInterval;
+
+            // Function to start the countdown timer
+            function startCountdown(seconds) {
+                clearInterval(countdownInterval);
+                let remainingSeconds = seconds;
+
+                resendOtpBtn.disabled = true;
+                resendOtpBtn.classList.add('text-gray-400', 'cursor-not-allowed');
+                resendOtpBtn.classList.remove('text-blue-600', 'hover:text-blue-800');
+
+                otpCountdownEl.textContent = remainingSeconds;
+
+                countdownInterval = setInterval(() => {
+                    remainingSeconds--;
+                    otpCountdownEl.textContent = remainingSeconds;
+
+                    if (remainingSeconds <= 0) {
+                        clearInterval(countdownInterval);
+                        resendOtpBtn.disabled = false;
+                        resendOtpBtn.classList.remove('text-gray-400', 'cursor-not-allowed');
+                        resendOtpBtn.classList.add('text-blue-600', 'hover:text-blue-800');
+                    }
+                }, 1000);
+            }
+
+            // Initialize countdown when OTP verification step is shown
+            if (typeof step6 !== 'undefined' && step6) {
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            if (!step6.classList.contains('hidden')) {
+                                startCountdown(60);
+                            }
+                        }
+                    });
+                });
+
+                observer.observe(step6, {
+                    attributes: true
+                });
+            }
+
+            // Handle OTP input behavior
+            otpInputs.forEach((input, index) => {
+                // Auto-focus the first input when the step is shown
+                if (index === 0) {
+                    input.addEventListener('focus', function () {
+                        this.select();
+                    });
+                }
+
+                // Handle input events
+                input.addEventListener('keydown', function (e) {
+                    // Allow only numbers, backspace, arrow keys
+                    if (
+                        !/^\d$/.test(e.key) &&
+                        e.key !== 'Backspace' &&
+                        e.key !== 'Delete' &&
+                        e.key !== 'ArrowLeft' &&
+                        e.key !== 'ArrowRight' &&
+                        e.key !== 'Tab'
+                    ) {
+                        e.preventDefault();
+                    }
+                });
+
+                input.addEventListener('input', function (e) {
+                    // Move to next input if a digit was entered
+                    if (this.value.length === 1 && index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+
+                    // Update the complete OTP value
+                    updateCompleteOtp();
+                });
+
+                input.addEventListener('keydown', function (e) {
+                    // Handle backspace
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        otpInputs[index - 1].focus();
+                    }
+                });
+
+                // Handle paste event for the entire OTP
+                input.addEventListener('paste', function (e) {
+                    e.preventDefault();
+                    const pastedData = e.clipboardData.getData('text').trim();
+
+                    // Check if pasted content is numeric and has proper length
+                    if (/^\d+$/.test(pastedData)) {
+                        // Fill all inputs with respective digits
+                        for (let i = 0; i < otpInputs.length; i++) {
+                            if (i < pastedData.length) {
+                                otpInputs[i].value = pastedData[i];
+                            }
+                        }
+
+                        // Focus on the next empty input or the last one
+                        const nextEmptyIndex = [...otpInputs].findIndex(input => !input.value);
+                        const focusIndex = nextEmptyIndex > -1 ? nextEmptyIndex : otpInputs.length - 1;
+                        otpInputs[focusIndex].focus();
+
+                        updateCompleteOtp();
+                    }
+                });
+            });
+
+            // Function to update the hidden field with complete OTP
+            function updateCompleteOtp() {
+                phoneOtpComplete.value = Array.from(otpInputs).map(input => input.value).join('');
+            }
+
+            // Resend OTP button handler
+            if (resendOtpBtn) {
+                resendOtpBtn.addEventListener('click', function () {
+                    if (this.disabled) return;
+
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    const phone = form.phone.value;
+
+                    if (!csrfToken) {
+                        alert('CSRF token is missing or invalid.');
+                        return;
+                    }
+
+                    if (!phone) {
+                        alert('Phone number is missing.');
+                        return;
+                    }
+
+                    fetch('/resendOTP', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            phone: phone
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            alert('Verification code resent. Please check your phone.');
+                            startCountdown(60);
+                        } else {
+                            alert('Failed to resend verification code. Please try again later.');
+                        }
+                    }).catch(error => {
+                        console.error('Error resending OTP:', error);
+                        alert('An unexpected error occurred. Please try again later.');
+                    });
+                });
+            }
+
+            // Modify the original form submission to include the OTP validation
+            if (submitButton) {
+                submitButton.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const phoneOtp = phoneOtpComplete.value;
+
+                    if (!phoneOtp || phoneOtp.length !== 6) {
+                        alert('Please enter the complete 6-digit verification code.');
+                        return;
+                    }
+
+                    // You can add OTP verification logic here before submitting the form
+                    // For example:
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                    fetch('/verifyOTP', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            phone: form.phone_full.value,
+                            code: phoneOtp
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            // If verification is successful, submit the form
+                            form.submit();
+                        } else {
+                            alert('Verification failed. Please check the code and try again.');
+                        }
+                    }).catch(error => {
+                        console.error('Error verifying OTP:', error);
+                        alert('An unexpected error occurred. Please try again later.');
+                    });
+                });
+            }
+
+            // Initialize the form
+            updateProgress();
+            updateButtons();
+            showCurrentStep();
+        });
+
+        function previewFile(inputId, previewId) {
+            const fileInput = document.getElementById(inputId);
+            const previewDiv = document.getElementById(previewId);
+
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    previewDiv.innerHTML = `
+                <img src="${e.target.result}" class="w-20 h-20 object-cover rounded-lg" alt="Preview" />
+                <p class="mt-2 text-sm text-gray-600">${file.name}</p>
+            `;
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+
+        //Password validation
+        // Password validation functions
+        function validatePassword(password) {
+            // Criteria:
+            const minLength = password.length >= 8;
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumbers = /\d/.test(password);
+            const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+            return {
+                isValid: minLength && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar,
+                minLength,
+                hasUpperCase,
+                hasLowerCase,
+                hasNumbers,
+                hasSpecialChar
+            };
+        }
+
+        function comparePasswords(password, confirmPassword) {
+            return password === confirmPassword;
+        }
+
+        // Update the DOM with validation feedback
+        function updatePasswordFeedback(validationResult, passwordField) {
+            let feedbackEl = document.getElementById('password-feedback');
+
+            // Create the feedback element if it doesn't exist
+            if (!feedbackEl) {
+                feedbackEl = document.createElement('div');
+                feedbackEl.id = 'password-feedback';
+                feedbackEl.className = 'text-sm mt-1';
+                passwordField.parentNode.appendChild(feedbackEl);
+            }
+
+            if (validationResult.isValid) {
+                feedbackEl.innerHTML = '<span class="text-green-600">✓ Password is strong</span>';
+                passwordField.classList.remove('border-red-500');
+                passwordField.classList.add('border-green-500');
+                return true;
+            } else {
+                let feedback = '<ul class="text-red-600 pl-5 list-disc">';
+                if (!validationResult.minLength) feedback += '<li>At least 8 characters</li>';
+                if (!validationResult.hasUpperCase) feedback += '<li>At least one uppercase letter</li>';
+                if (!validationResult.hasLowerCase) feedback += '<li>At least one lowercase letter</li>';
+                if (!validationResult.hasNumbers) feedback += '<li>At least one number</li>';
+                if (!validationResult.hasSpecialChar) feedback += '<li>At least one special character</li>';
+                feedback += '</ul>';
+
+                feedbackEl.innerHTML = feedback;
+                passwordField.classList.remove('border-green-500');
+                passwordField.classList.add('border-red-500');
+                return false;
+            }
+        }
+
+        function updateConfirmPasswordFeedback(isMatch, confirmPasswordField) {
+            let feedbackEl = document.getElementById('confirm-password-feedback');
+
+            // Create the feedback element if it doesn't exist
+            if (!feedbackEl) {
+                feedbackEl = document.createElement('div');
+                feedbackEl.id = 'confirm-password-feedback';
+                feedbackEl.className = 'text-sm mt-1';
+                confirmPasswordField.parentNode.appendChild(feedbackEl);
+            }
+
+            if (isMatch) {
+                feedbackEl.innerHTML = '<span class="text-green-600">✓ Passwords match</span>';
+                confirmPasswordField.classList.remove('border-red-500');
+                confirmPasswordField.classList.add('border-green-500');
+                return true;
+            } else {
+                feedbackEl.innerHTML = '<span class="text-red-600">✗ Passwords do not match</span>';
+                confirmPasswordField.classList.remove('border-green-500');
+                confirmPasswordField.classList.add('border-red-500');
+                return false;
+            }
+        }
+
+        // Initialize password validation
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordField = document.getElementById('password');
+            const confirmPasswordField = document.getElementById('confirm-password');
+
+            if (!passwordField || !confirmPasswordField) return;
+
+            // Rename the second password field's ID
+            if (document.querySelectorAll('#password').length > 1) {
+                document.querySelectorAll('#password')[1].id = 'confirm-password';
+            }
+
+            // Add validation on password input
+            passwordField.addEventListener('input', function () {
+                const validationResult = validatePassword(this.value);
+                updatePasswordFeedback(validationResult, this);
+
+                // If confirm password has a value, check if they match
+                if (confirmPasswordField.value) {
+                    const isMatch = comparePasswords(this.value, confirmPasswordField.value);
+                    updateConfirmPasswordFeedback(isMatch, confirmPasswordField);
+                }
+            });
+
+            // Add validation on confirm password input
+            confirmPasswordField.addEventListener('input', function () {
+                if (passwordField.value) {
+                    const isMatch = comparePasswords(passwordField.value, this.value);
+                    updateConfirmPasswordFeedback(isMatch, this);
+                }
+            });
+
+            // Add validation to form submission
+            const form = document.getElementById('signupForm');
+            if (form) {
+                const originalValidateCurrentStep = window.validateCurrentStep;
+
+                // Override the validateCurrentStep function if it exists
+                if (typeof originalValidateCurrentStep === 'function') {
+                    window.validateCurrentStep = function () {
+                        const baseValidation = originalValidateCurrentStep();
+
+                        // If the current step contains password fields, validate them
+                        const currentStepElement = document.getElementById(`step${currentStep}`);
+                        if (currentStepElement && currentStepElement.contains(passwordField)) {
+                            const passwordValid = updatePasswordFeedback(validatePassword(passwordField.value), passwordField);
+                            const passwordsMatch = updateConfirmPasswordFeedback(comparePasswords(passwordField.value, confirmPasswordField.value), confirmPasswordField);
+
+                            return baseValidation && passwordValid && passwordsMatch;
+                        }
+
+                        return baseValidation;
+                    };
+                } else {
+                    // If the function doesn't exist, add password validation to form submission
+                    form.addEventListener('submit', function (e) {
+                        const passwordValid = updatePasswordFeedback(validatePassword(passwordField.value), passwordField);
+                        const passwordsMatch = updateConfirmPasswordFeedback(comparePasswords(passwordField.value, confirmPasswordField.value), confirmPasswordField);
+
+                        if (!passwordValid || !passwordsMatch) {
+                            e.preventDefault();
+                            alert('Please fix the password issues before submitting.');
+                        }
+                    });
+                }
+            }
+        });
+
+    </script>
+</body>
+
+</html>
