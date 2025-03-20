@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twogere|Enterprise</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 2s infinite;
+        }
+
+        .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 0.5rem;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background-color: rgba(107, 114, 128, 0.5);
+            border-radius: 3px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+
+        .chat-height {
+            height: calc(100vh - 160px);
+        }
+
+        /* Add transitions for sidebar */
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .left-sidebar {
+            transform: translateX(-100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 16rem;
+            z-index: 50;
+        }
+
+        .right-sidebar {
+            transform: translateX(100%);
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 16rem;
+            z-index: 50;
+        }
+
+        .left-sidebar.open {
+            transform: translateX(0);
+        }
+
+        .right-sidebar.open {
+            transform: translateX(0);
+        }
+
+        .main-content {
+            transition: margin 0.3s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-white text-gray-900 h-screen flex overflow-hidden">
+    <!-- Left Sidebar - Chat History (hidden by default) -->
+    <aside id="left-sidebar"
+        class="left-sidebar sidebar-transition bg-white border-r border-gray-200 flex flex-col h-screen shadow-lg">
+        <!-- Logo Area -->
+        <div class="p-4 border-b flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <h1 class="text-2xl font-bold text-blue-700">Twogere Enterprise</h1>
+                <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full">1.0</span>
+            </div>
+            <button class="text-gray-500 hover:text-gray-700" id="close-left-sidebar">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main id="main-content" class="flex-1 flex flex-col overflow-hidden mx-auto w-full">
+        <!-- navigation -->
+        <header class="bg-white border-b border-gray-200 py-3 px-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <button class="text-gray-500 hover:text-gray-700" id="show-left-sidebar">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <h2 class="text-lg font-medium text-gray-900">Twogere Enterprise</h2>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button class="rounded-full p-1 text-gray-500 hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                            d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                    </svg>
+                </button>
+                <button class="rounded-full p-1 text-gray-500 hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <button id="show-right-sidebar" class="rounded-full p-1 text-gray-500 hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="flex flex-col justify-between h-[calc(100vh-128px)] overflow-y-auto p-4 bg-white">
+            <!-- Suggestions Div - Fixed at the bottom of chat area -->
+            <div id="suggestions-div" class="mt-auto">
+                <div class="mb-4">
+                    <div class="grid grid-cols-2 gap-2 mx-auto max-w-8xl">
+                        <!-- Video Container -->
+                        <div class="relative w-full aspect-w-16 aspect-h-9 bg-black">
+                            <img src="video.jpg" alt="Football video" class="w-full h-full object-cover" />
+                            <!-- Video Controls -->
+                            <div
+                                class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4">
+                                <!-- Progress Bar -->
+                                <div class="relative w-full mb-4">
+                                    <input type="range" min="0" max="100" value="1"
+                                        class="video-progress appearance-none w-full h-1 bg-gray-300 rounded-lg cursor-pointer" />
+                                    <div
+                                        class="absolute top-0 left-0 w-1 h-1 bg-red-600 rounded-full transform -translate-y-1/2">
+                                    </div>
+                                </div>
+
+                                <!-- Controls -->
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <!-- Play Button -->
+                                        <button class="text-white" title="play">
+                                            <i class="fa-solid fa-circle-play h-8 w-8"></i>
+                                        </button>
+
+                                        <!-- microphone Button -->
+                                        <button class="text-white" title="microphone">
+                                            <i class="fa-solid fa-microphone h-8 w-8"></i>
+                                        </button>
+
+                                        <!-- Previous Button -->
+                                        <button class="text-white" title="previous">
+                                            <i class="fa-solid fa-backward h-8 w-8"></i>
+                                        </button>
+
+                                        <!-- Next Button -->
+                                        <button class="text-white" title="next">
+                                            <i class="fa-solid fa-forward h-8 w-8"></i>
+                                        </button>
+
+                                        <!-- Mute Button -->
+                                        <button class="text-white" title="mute">
+                                            <i class="fa-solid fa-volume-xmark h-8 w-8"></i>
+                                        </button>
+
+
+                                    </div>
+
+                                    <div class="flex items-center space-x-4">
+                                        <!-- Auto Play -->
+                                        <button class="text-white bg-gray-600 rounded-full p-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                            </svg>
+                                        </button>
+
+                                        <!-- Captions -->
+                                        <button class="text-white" title="captions">
+                                            <i class="fa-solid fa-closed-captioning h-8 w-8"></i>
+                                        </button>
+
+                                        <!-- Settings -->
+                                        <button class="text-white" title="settings">
+                                            <i class="fa-solid fa-gear h-8 w-8"></i>
+                                        </button>
+
+                                        <!-- Mini Player -->
+                                        <button class="text-white">
+                                            <i class="fa-solid fa-file-lines h-8 w-8"></i>
+                                        </button>
+
+                                        <!-- Fullscreen -->
+                                        <button class="text-white">
+                                            <i class="fa-solid fa-expand h-8 w-8"></i>
+                                        </button>
+
+                                        <!-- Time -->
+                                        <span class="text-white text-sm">0:07 / 11:03</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-1">
+                            <div class="mb-6 flex items-center justify-between">
+                                <h2 class="text-xl font-semibold text-gray-900">News & Updates | Today</h2>
+                                <div class="relative">
+                                    <button onclick="document.getElementById('filterMenu').classList.toggle('hidden')"
+                                        class="text-gray-500 hover:text-gray-700">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                        </svg>
+                                    </button>
+                                    <!-- Filter Dropdown Menu -->
+                                    <div id="filterMenu"
+                                        class="absolute right-0 mt-2 hidden w-48 rounded-md border border-gray-100 bg-white py-2 shadow-lg">
+                                        <div class="px-4 py-2 text-sm text-gray-500">FILTER</div>
+                                        <a href="#"
+                                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Today</a>
+                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">This
+                                            Month</a>
+                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">This
+                                            Year</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- News Items -->
+                            <div class="space-y-6">
+                                <!-- News Item 1 -->
+                                <div class="flex space-x-4">
+                                    <img src="IMAGES/news-1.jpg" alt="" class="h-16 w-16 rounded-lg object-cover">
+                                    <div class="flex-1">
+                                        <h3 class="mb-1 text-base font-semibold text-blue-800 hover:text-blue-600">
+                                            Nihil blanditiis at in nihil autem
+                                        </h3>
+                                        <p class="text-sm text-gray-600">
+                                            Sit recusandae non aspernatur laboriosam. Quia enim eligendi sed ut harum...
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- News Item 2 -->
+                                <div class="flex space-x-4">
+                                    <img src="IMAGES/news-1.jpg" alt="" class="h-16 w-16 rounded-lg object-cover">
+                                    <div class="flex-1">
+                                        <h3 class="mb-1 text-base font-semibold text-blue-800 hover:text-blue-600">
+                                            Quidem autem et impedit
+                                        </h3>
+                                        <p class="text-sm text-gray-600">
+                                            Illo nemo neque maiores vitae officiis cum eum turos elan dries werona
+                                            nande...
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- News Item 3 -->
+                                <div class="flex space-x-4">
+                                    <img src="IMAGES/news-1.jpg" alt="" class="h-16 w-16 rounded-lg object-cover">
+                                    <div class="flex-1">
+                                        <h3 class="mb-1 text-base font-semibold text-blue-800 hover:text-blue-600">
+                                            Id quia et et ut maxime similique
+                                        </h3>
+                                        <p class="text-sm text-gray-600">
+                                            Fugiat voluptas vero eaque accusantium eos. Consequuntur sed ipsam et
+                                            totam...
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- News Item 4 -->
+                                <div class="flex space-x-4">
+                                    <img src="IMAGES/news-1.jpg" alt="" class="h-16 w-16 rounded-lg object-cover">
+                                    <div class="flex-1">
+                                        <h3 class="mb-1 text-base font-semibold text-blue-800 hover:text-blue-600">
+                                            Laborum corporis quo dara net para
+                                        </h3>
+                                        <p class="text-sm text-gray-600">
+                                            Qui enim quia optio. Eligendi aut asperiores enim repellendusvel rerum
+                                            cuder...
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- News Item 5 -->
+                                <div class="flex space-x-4">
+                                    <img src="IMAGES/news-1.jpg" alt="" class="h-16 w-16 rounded-lg object-cover">
+                                    <div class="flex-1">
+                                        <h3 class="mb-1 text-base font-semibold text-blue-800 hover:text-blue-600">
+                                            Et dolores corrupti quae illo
+                                        </h3>
+                                        <p class="text-sm text-gray-600">
+                                            Odit ut eveniet modi reiciendis. Atque cupiditate libero beatae dignissimos
+                                            eius...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <script>
+        // Initialize sidebar toggle functionality
+        const showLeftSidebarBtn = document.getElementById('show-left-sidebar');
+        const closeLeftSidebarBtn = document.getElementById('close-left-sidebar');
+        const showRightSidebarBtn = document.getElementById('show-right-sidebar');
+        const closeRightSidebarBtn = document.getElementById('close-right-sidebar');
+        const suggestionsDiv = document.getElementById('suggestions-div');
+        const leftSidebar = document.getElementById('left-sidebar');
+        const rightSidebar = document.getElementById('right-sidebar');
+        const mainContent = document.getElementById('main-content');
+
+        // Left sidebar toggle
+        if (showLeftSidebarBtn) {
+            showLeftSidebarBtn.addEventListener('click', () => {
+                leftSidebar.classList.add('open');
+            });
+        }
+
+        if (closeLeftSidebarBtn) {
+            closeLeftSidebarBtn.addEventListener('click', () => {
+                leftSidebar.classList.remove('open');
+            });
+        }
+
+        // Right sidebar toggle
+        if (showRightSidebarBtn) {
+            showRightSidebarBtn.addEventListener('click', () => {
+                rightSidebar.classList.add('open');
+            });
+        }
+
+        if (closeRightSidebarBtn) {
+            closeRightSidebarBtn.addEventListener('click', () => {
+                rightSidebar.classList.remove('open');
+            });
+        }
+
+        // Chat functionality
+        const chatArea = document.getElementById('chat-area');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+
+        // Function to add a user message
+        function addUserMessage(message) {
+            // Hide suggestions div when user sends first message
+            if (suggestionsDiv && suggestionsDiv.style.display !== 'none') {
+                suggestionsDiv.style.display = 'none';
+            }
+            const userMessageHtml = `
+                <div class="flex items-start mb-4 justify-end">
+                    <div class="max-w-3xl rounded-lg bg-blue-50 px-4 py-2 text-gray-800">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                    <img class="h-8 w-8 rounded-full ml-2" src="./IMG_20231215_130908_490.jpg" alt="User">
+                </div>
+            `;
+            chatArea.insertAdjacentHTML('beforeend', userMessageHtml);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Function to add an AI message
+        function addAIMessage(message) {
+            const aiMessageHtml = `
+                <div class="flex items-start mb-5">
+                    <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-2">Q</div>
+                    <div class="max-w-3xl">
+                        <div class="bg-white rounded-lg px-4 py-2 text-gray-800 border border-gray-200">
+                            <p class="text-sm">${message}</p>
+                        </div>
+                        <div class="flex items-center mt-1 space-x-2 text-xs text-gray-500">
+                            <button class="flex items-center hover:text-gray-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                                </svg>
+                                Upvote
+                            </button>
+                            <button class="flex items-center hover:text-gray-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
+                                    <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2a1 1 0 110 2h-2v-2z" />
+                                </svg>
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatArea.insertAdjacentHTML('beforeend', aiMessageHtml);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Function to send a message to the LLAMA CPP API
+        async function sendMessageToAPI(message) {
+            try {
+                const response = await fetch('http://192.168.88.232:8080/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: message }],
+                        model: 'llama', // Replace with the correct model name if needed
+                    }),
+                });
+
+                const data = await response.json();
+                return data.choices[0].message.content;
+            } catch (error) {
+                console.error('Error:', error);
+                return 'Sorry, there was an error connecting to the AI service.';
+            }
+        }
+
+        // Handle send button click
+        if (sendButton) {
+            sendButton.addEventListener('click', async () => {
+                const message = messageInput.value.trim();
+                if (message) {
+                    addUserMessage(message);
+                    messageInput.value = '';
+
+                    try {
+                        const aiResponse = await sendMessageToAPI(message);
+                        addAIMessage(aiResponse);
+                    } catch (error) {
+                        console.error('Error:', error);
+                        addAIMessage('Sorry, there was an error processing your request.');
+                    }
+                }
+            });
+        }
+
+        // Handle enter key in textarea
+        if (messageInput) {
+            messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendButton.click();
+                }
+            });
+        }
+
+        // Handle suggested prompts - update to hide suggestions on click
+        const suggestedPrompts = document.querySelectorAll('.grid.grid-cols-2 button');
+        suggestedPrompts.forEach((button) => {
+            button.addEventListener('click', async () => {
+                const promptText = button.querySelector('.font-medium').textContent;
+
+                // Hide suggestions when a prompt is clicked
+                if (suggestionsDiv) {
+                    suggestionsDiv.style.display = 'none';
+                }
+
+                addUserMessage(promptText);
+
+                try {
+                    const aiResponse = await sendMessageToAPI(promptText);
+                    addAIMessage(aiResponse);
+                } catch (error) {
+                    console.error('Error:', error);
+                    addAIMessage('Sorry, there was an error processing your request.');
+                }
+            });
+        });
+
+        // Initialize Feather icons if present
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+
+        // Function to reset chat (if needed)
+        function resetChat() {
+            // Clear chat messages
+            chatArea.innerHTML = '';
+
+            // Show suggestions div again
+            if (suggestionsDiv) {
+                suggestionsDiv.style.display = 'block';
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+</body>
+
+</html>
